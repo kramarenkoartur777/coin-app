@@ -38,8 +38,24 @@ class ChartInfo extends Component {
       this.setState({arrAll: res.data})
     })
   }
+  numberWithCommas(n) {
+    var parts=n.toString().split(".");
+    const p = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
+    return p;
+  }
   render(){
     const { price, percent_change_24h, market_cap, volume_usd_24, circulating_supply, total_supply, symbol, isAllChart, isLast1h, apiDaily, isDaily } = this.props.coinsNav;
+
+    const capNum = Number (market_cap);
+    const volNum = Number(volume_usd_24);
+    const c_suppNum = Number(circulating_supply);
+    const t_suppNum = Number(total_supply);
+
+    const pr = this.numberWithCommas(price);
+    const cap = this.numberWithCommas(capNum);
+    const vol = this.numberWithCommas(volNum);
+    const c_supp = this.numberWithCommas(c_suppNum);
+    const t_supp = this.numberWithCommas(t_suppNum);
     var arr = apiDaily ? this.state.arrDaily : this.state.arrAll;
     var Highcharts='Highcharts';
     var conf={
@@ -117,27 +133,22 @@ class ChartInfo extends Component {
       <ScrollView>
       <View style={styles.container}>
         <View style={styles.priceBlock}>
-          <Text style={styles.priceText}>${price == '' ? 0 : price}<Text style={[(percent_change_24h < 0 ? styles.percentMinus : styles.percentPlus), styles.pricePercentText]}>   ({percent_change_24h == '' ? 0 : percent_change_24h}%)</Text></Text>
+          <Text style={styles.priceText}>$ {pr == '' ? 0 : pr}<Text style={[(percent_change_24h < 0 ? styles.percentMinus : styles.percentPlus), styles.pricePercentText]}>   ({percent_change_24h == '' ? 0 : percent_change_24h}%)</Text></Text>
         </View>
         <View style={[styles.marketCapBlock, styles.chartBlocks]}>
           <Text style={[styles.marketCapTitle, styles.chartTitle]}>Market Cap</Text>
-          <Text style={[styles.marketCapText, styles.chartText]}>$ {market_cap == '' ? 0 : market_cap} <Text style={styles.usdText}>USD</Text></Text>
+          <Text style={[styles.marketCapText, styles.chartText]}>$ {cap == '' ? 0 : cap}</Text>
         </View>
         <View style={[styles.volumeBlock, styles.chartBlocks]}>
           <Text style={[styles.volumeTitle, styles.chartTitle]}>Volume (24h)</Text>
-          <Text style={[styles.volumeText, styles.chartText]}>$ {volume_usd_24 == '' ? 0 : volume_usd_24 } <Text style={styles.usdText}>USD</Text></Text>
+          <Text style={[styles.volumeText, styles.chartText]}>$ {vol == '' ? 0 : vol }</Text>
         </View>
         <View style={[styles.coinsSupplyBlock, styles.chartBlocks]}>
           <Text style={[styles.coinsSupplyTitle, styles.chartTitle]}>Coins Supply</Text>
-          <Text style={[styles.coinsSupplyText, styles.chartText]}>$ {circulating_supply == '' ? 0 : circulating_supply}  / {total_supply == '' ? 0 : total_supply} <Text style={styles.symbolText}>{symbol}</Text></Text>
+          <Text style={[styles.coinsSupplyText, styles.chartText]}>{c_supp == '' ? 0 : c_supp}  / {t_supp == '' ? 0 : t_supp} <Text style={styles.symbolText}>{symbol}</Text></Text>
         </View>
           <View style={{flex: 1}}>
             <View style={styles.chartNav}>
-              <TouchableOpacity
-                style={[styles.chartNavBtn, (isLast1h ? styles.active : styles.inactive )]}
-              >
-                <Text style={styles.chartNavText}>Last 1H</Text>
-              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => this.props.goDaily()}
                 style={[styles.chartNavBtn, (isDaily ? styles.active : styles.inactive )]}
@@ -219,21 +230,19 @@ const styles = StyleSheet.create({
     marginLeft: 20
   },
   chartNavBtn: {
-    width: 64,
-    height: 22,
-    alignSelf: 'center',
-    alignItems: 'center',
     backgroundColor: 'rgba(3, 90, 121, 0.8)',
   },
   chartNavText: {
+    width: 64,
+    height: 22,
     color: '#fff',
     fontFamily: 'Avenir-Medium',
     fontWeight: '300',
-    fontSize: 10
+    fontSize: 10,
+    textAlign: 'center',
+    alignSelf: 'center'
   },
-  usdText: {
-    fontSize: 11
-  },
+
   symbolText: {
     fontSize: 11
   },
@@ -244,17 +253,9 @@ const styles = StyleSheet.create({
     color: '#ff2525'
   },
   active: {
-    width: 64,
-    height: 22,
-    alignSelf: 'center',
-    alignItems: 'center',
     backgroundColor: 'rgba(3, 90, 121, 1)',
   },
   inactive: {
-    width: 64,
-    height: 22,
-    alignSelf: 'center',
-    alignItems: 'center',
     backgroundColor: 'rgba(3, 90, 121, 0.5)',
   }
 });

@@ -2,12 +2,16 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { connect } from 'react-redux';
 
-import { goAllCoins }  from '../actions/CoinsNavActions';
+import { goAllCoins, goExchanges, goPairs }  from '../actions/CoinsNavActions';
 import { goTopCoins }  from '../actions/CoinsNavActions';
+import { goHamburger, closeHamburger }  from '../actions/MenuNavActions';
 
 import Top100Screen from './componentsCoins/Top100Screen';
 import AllCoinsScreen from './componentsCoins/AllCoinsScreen';
 import ChartScreen from './componentsCoins/ChartScreen';
+import ExchangesScreen from './componentsCoins/ExchangesScreen';
+import ExchangesDetails from './componentsCoins/ExchangesDetails';
+import PairsScreen from './componentsCoins/PairsScreen';
 
 class Coins extends Component {
 
@@ -16,6 +20,10 @@ class Coins extends Component {
       return <Top100Screen />;
     } else if(this.props.coinsNav.isAllCoins){
       return <AllCoinsScreen />;
+    } else if(this.props.coinsNav.isExchanges){
+      return <ExchangesScreen />;
+    } else if(this.props.coinsNav.isPairs){
+      return <PairsScreen />
     }
   }
 
@@ -27,14 +35,17 @@ class Coins extends Component {
           source={{uri: `${this.props.coinsNav.coinUrl}`}}
           />
       );
+    } else if(this.props.coinsNav.isExchangesDetails) {
+      return <ExchangesDetails />
     } else {
       return(
         <View style={styles.container}>
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.hamburgerBtn}
+              onPress={this.props.goHamburger}
             >
-              <Image source={require('../img/menubar-icon.png')}/>
+              <Image style={{width: 17, height: 10}} source={require('../img/menu-icon-3x.png')}/>
             </TouchableOpacity>
             <View style={styles.logoTextBlock}>
               <Text style={styles.logoText}>NEWSBTC</Text>
@@ -43,12 +54,12 @@ class Coins extends Component {
               <TouchableOpacity
                 style={styles.editBtn}
               >
-                <Image source={require('../img/filter-icon.png')}/>
+                {/*<Image style={{width: 15, height: 10}} source={require('../img/filter-icon-3x.png')}/>*/}
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.searchBtn}
               >
-                  <Image source={require('../img/search-icon.png')}/>
+                  {/*<Image style={{width: 12, height: 14}} source={require('../img/search-icon-3x.png')}/>*/}
               </TouchableOpacity>
             </View>
           </View>
@@ -67,11 +78,13 @@ class Coins extends Component {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.btnNavCoinsMenu}
+              onPress={this.props.goExchanges}
             >
               <Text style={[(this.props.coinsNav.isExchanges ? styles.activeText : styles.inactiveText), styles.navFontText, styles.navFontTextExchanges]}>Exchanges</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.btnNavCoinsMenu}
+              onPress={this.props.goPairs}
             >
               <Text style={[(this.props.coinsNav.isPairs ? styles.activeText : styles.inactiveText), styles.navFontText, styles.navFontTextPairs]}>Pairs</Text>
             </TouchableOpacity>
@@ -113,11 +126,11 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   editBtn: {
-    paddingTop: 6,
+    paddingTop: 7,
     paddingRight: 17
   },
   searchBtn: {
-    paddingTop: 6
+    paddingTop: 7
   },
   headerNavBlock: {
     flex: 1,
@@ -162,10 +175,10 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return{
-    coins: state.coins,
-    coinsNav: state.coinsNav
+    coinsNav: state.coinsNav,
+    menuNav: state.menuNav
   }
 };
 
 
-export default connect(mapStateToProps, { goAllCoins, goTopCoins })(Coins);
+export default connect(mapStateToProps, { goAllCoins, goTopCoins, goExchanges, goPairs, goHamburger, closeHamburger })(Coins);

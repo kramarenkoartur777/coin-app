@@ -1,108 +1,93 @@
+import axios from 'axios';
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, Text, FlatList, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, View, Text, FlatList, Image, ScrollView, TouchableOpacity } from 'react-native';
 var entities = require('entities');
 
 import { connect } from 'react-redux';
 
-import { goDetailNews, backNews } from '../../actions/DetailNewsActions';
+import { goDetailNews, backNews, likedDetailNews, fetchData2 } from '../../actions/DetailNewsActions';
 import { likedPost, disLikesPost } from '../../actions/LikedPostActions';
 import BitcoinDetailPage from './BitcoinDetailPage';
 import MenuNews from '../MenuNews';
+import FirstBlock from './FirstBlock';
+import AllBlocks from './AllBlocks';
 
 class BitcoinNews extends Component {
   constructor(){
     super();
     this.state = {
       data: [],
-      source_url: '',
-      id: [],
-      url: ''
+      isFetching: true,
+      isLiked: false
     };
     this.source_urlFunc = this.source_urlFunc.bind(this);
   }
-  fetchData = async() => {
-    const { menuNews } = this.props;
-    const url = menuNews.fetchUrl;
-    const responce = await fetch(`${url}`);
-    const posts = await responce.json();
-    this.setState({data: posts});
+  componentDidMount(){
+    this.fetchData();
+  }
+  fetchData(){
+    axios.get(`http://www.newsbtc.com/wp-json/wp/v2/posts/?categories=5651&per_page=30&page=1&_embed`)
+      .then((res) => {
+        this.setState({ data: res.data, isFetching: false})
+        this.props.fetchData2(res.data)
+      })
   }
   source_urlFunc(item){
-    const source_url = item._embedded["wp:featuredmedia"][0].source_url;
-    return source_url;
+    const source_url = item._embedded["wp:featuredmedia"];
+    if(source_url == undefined){
+      return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfClLNBejGSkyxTT1EIn779i-szkhPMB9qIUrx5zYdlgQ5ziXG'
+    } else {
+      return item._embedded["wp:featuredmedia"][0].source_url
+    }
   }
-  rem(){
-    const dataId = this.state.data;
+  renderList(){
+    const { data } = this.state;
     let arr = [];
-    let nom = dataId.map((item) => {
+    let nom = data.map((item) => {
       arr.push(item.id);
     });
     let num = arr[0];
-    return num;
-  }
-  renderBlock(item, num){
-    if(num == item.id){
-      return(
-        <TouchableOpacity
-          onPress={() => this.props.goDetailNews(item, num)}
-        >
-          <View style={styles.firstBlock}>
-            <Text style={styles.firstBlockTitle}>{entities.decodeHTML(item.title.rendered)}</Text>
-            <Image style={styles.firstBlockImage} source={{uri: this.source_urlFunc(item)}} />
-            <View style={styles.firstBlockFooter}>
-              <Text style={styles.firstBlockTime}>{item.date}</Text>
-              <TouchableOpacity
-                style={styles.firstBlockFavBtn}
-                onPress={() => this.props.likedPost(item)}
-              >
-                <Image
-                  style={styles.firstBlockFavImage}
-                  source={this.props.liked.isLiked ? require('../../img/fav-news-filled-icon.png') : require('../../img/fav-news-icon.png')}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableOpacity>
-      );
-    } else {
-      return(
-        <TouchableOpacity
-          onPress={() => this.props.goDetailNews(item, num)}
-        >
-          <View style={styles.allBlocks}>
-            <Image style={styles.allBlockImage} source={{uri: this.source_urlFunc(item)}} />
-            <View style={styles.allBlockAbout}>
-              <Text style={styles.allBlockAboutText}>{entities.decodeHTML(item.title.rendered)}</Text>
-              <View style={styles.aboutFooter}>
-                <Text style={styles.aboutFooterTime}>{item.date}</Text>
-                <TouchableOpacity
-                  style={styles.aboutFooterFavBtn}
-                >
-                  <Image
-                    style={styles.aboutFooterImage}
-                    source={require('../../img/fav-news-icon.png')}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
-      );
-    }
+    const ren = data.map((coin, index) => {
+      if(num === coin.id){
+        return (
+          <FirstBlock key={index}
+            onPress={() => {
+              this.props.goDetailNews(coin, index);
+            }}
+            data={coin}
+            dataId={index}
+            source_url={{uri: this.source_urlFunc(coin)}}
+            textTitle={entities.decodeHTML(coin.title.rendered)}
+            date={coin.date}
+          />
+        );
+      } else {
+        return (
+          <AllBlocks key={index}
+            onPress={() => {
+              this.props.goDetailNews(coin);
+            }}
+            data={coin}
+            dataId={index}
+            source_url={{uri: this.source_urlFunc(coin)}}
+            textTitle={entities.decodeHTML(coin.title.rendered)}
+            date={coin.date}
+          />
+        );
+      }
+    })
+    return ren;
   }
   render(){
-    this.fetchData();
     if(this.props.detailNews.isDetail){
       return <BitcoinDetailPage />;
     } else {
       return(
         <View style={styles.container} id={this.props.id}>
           <MenuNews />
-          <FlatList
-            data={this.state.data}
-            keyExtractor={(x, i) => x.id}
-            renderItem={({item}) => this.renderBlock(item, this.rem())}
-          />
+          <ScrollView>
+          {this.state.isFetching ? <ActivityIndicator style={{paddingTop: 200}} size='small' /> : this.renderList()}
+          </ScrollView>
         </View>
       );
     }
@@ -113,74 +98,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1d252c'
-  },
-  firstBlock: {
-    borderBottomWidth: 3,
-    borderBottomColor: 'rgba(0, 0, 0, 0.3)',
-    paddingHorizontal: 15
-  },
-  firstBlockTitle: {
-    fontSize: 16,
-    fontFamily: 'Avenir-Medium',
-    fontWeight: '500',
-    color: '#fff',
-    marginTop: 13,
-    marginBottom: 9
-  },
-  firstBlockImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 5
-  },
-  firstBlockFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 15
-  },
-  firstBlockTime: {
-    color: '#bcbcbc',
-    fontFamily: 'Avenir-Medium',
-    fontWeight: '500',
-    fontSize: 12
-  },
-  firstBlockFavBtn: {
-  },
-  firstBlockFavImage: {
-    width: 15,
-    height: 15
-  },
-  allBlocks: {
-    paddingHorizontal: 15,
-    paddingVertical: 20,
-    flexDirection: 'row',
-  },
-  allBlockImage: {
-    width: 92,
-    height: 92,
-    borderRadius: 5
-  },
-  allBlockAbout: {
-    paddingLeft: 10,
-    justifyContent: 'space-between'
-  },
-  allBlockAboutText: {
-    fontFamily: 'Avenir-Medium',
-    fontSize: 14,
-    fontWeight: '500',
-    width: 232,
-    color: '#fff'
-  },
-  aboutFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  aboutFooterTime: {
-    color: '#bcbcbc',
-    fontFamily: 'Avenir-Medium',
-    fontSize: 12,
-    fontWeight: '500'
-  },
-  aboutFooterImage: {
   }
 });
 
@@ -192,4 +109,4 @@ const mapStateToProps = (state) => {
   }
 };
 
-export default connect(mapStateToProps, { goDetailNews, backNews, likedPost, disLikesPost })(BitcoinNews);
+export default connect(mapStateToProps, { goDetailNews, backNews, likedPost, disLikesPost, likedDetailNews, fetchData2 })(BitcoinNews);

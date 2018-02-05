@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 
-import { goBitcoin, goAltcoin, goIco, goAnalysys, goSponsored, goDerivatives } from '../actions/MenuNavNewsActions';
+import { goHamburger, closeHamburger } from '../actions/MenuNavActions';
+import { goBitcoin, goAltcoin, goIco, goAnalysys, goSponsored, goDerivatives, goLatest } from '../actions/MenuNavNewsActions';
 
 class MenuNews extends Component {
   render(){
@@ -10,6 +11,7 @@ class MenuNews extends Component {
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity
+            onPress={this.props.goHamburger}
             style={styles.hamburgerBtn}
           >
             <Image source={require('../img/menubar-icon.png')}/>
@@ -22,6 +24,12 @@ class MenuNews extends Component {
         <ScrollView horizontal
           showsHorizontalScrollIndicator={false}
         >
+          <TouchableOpacity
+            style={styles.btnNavCoinsMenu}
+            onPress={this.props.goLatest}
+          >
+            <Text style={[(this.props.menuNews.isLatest ? styles.activeText : styles.inactiveText), styles.navFontText]}>Latest</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnNavCoinsMenu}
             onPress={this.props.goBitcoin}
@@ -44,7 +52,7 @@ class MenuNews extends Component {
             style={styles.btnNavCoinsMenu}
             onPress={this.props.goAnalysys}
           >
-            <Text style={[(this.props.menuNews.isAnalysys ? styles.activeText : styles.inactiveText), styles.navFontText]}>Analysys</Text>
+            <Text style={[(this.props.menuNews.isAnalysys ? styles.activeText : styles.inactiveText), styles.navFontText]}>Analysis</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnNavCoinsMenu}
@@ -118,8 +126,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    menuNews: state.menuNews
+    menuNews: state.menuNews,
+    menuNav: state.menuNav
   }
 };
 
-export default connect(mapStateToProps, { goBitcoin, goAltcoin, goIco, goAnalysys, goSponsored, goDerivatives })(MenuNews);
+export default connect(mapStateToProps, { goLatest, goBitcoin, goAltcoin, goIco, goAnalysys, goSponsored, goDerivatives, goHamburger, closeHamburger })(MenuNews);

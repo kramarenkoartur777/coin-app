@@ -1,65 +1,142 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import { StyleSheet, View, Text, FlatList, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { goDetailNews, backNews } from '../../actions/DetailNewsActions';
 var entities = require('entities');
 import HTMLView from 'react-native-htmlview';
 
+import FirstBlock from './FirstBlock';
+import AllBlocks from './AllBlocks';
+
 class BitcoinDetailPage extends Component {
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
     this.state = {
       data: [],
-      source_url: '',
-      id: []
+      isLiked: false,
+      monthName: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     };
     this.source_urlFunc = this.source_urlFunc.bind(this);
   }
-  fetchData = async() => {
-    const { menuNews } = this.props;
-    const url = menuNews.fetchUrl;
-    const responce = await fetch(`${url}`);
-    const posts = await responce.json();
-    this.setState({data: posts});
-  }
   componentDidMount(){
     this.fetchData();
+  }
+  fetchData(){
+    const { data2 } = this.props.detailNews;
+    this.setState({
+      data: data2
+    })
   }
   source_urlFunc(data){
     const source_url = data._embedded["wp:featuredmedia"][0].source_url;
     return source_url;
   }
-  renderBlock(item){
-    if(item.id == this.props.detailNews.data.id){
-      return null;
+  getDateFunc(date){
+    const dateObj = new Date(date);
+    let day = dateObj.getDate();
+    let month = dateObj.getMonth();
+    let hours = dateObj.getHours();
+    let hoursD = hours < 10 ? '0' + hours : hours;
+    let min = dateObj.getMinutes();
+    let minD = min < 10 ? '0' + min : min;
+    let dataDate = day + ' ' + this.state.monthName[month] + ' | ' + hoursD + ':' + minD;
+    return dataDate;
+  }
+  pushArr(i){
+    const { data } = this.state;
+    let newArr = [];
+    let arr1 = data.slice(0, i);
+    let arr2 = data.slice(i + 1);
+    newArr.push(data[i]);
+    arr1.map((a) => {
+      newArr.push(a)
+    });
+    arr2.map((a) => {
+      newArr.push(a)
+    })
+    this.setState({
+      data: newArr
+    })
+  }
+  source_urlFunc(item){
+    const source_url = item._embedded["wp:featuredmedia"];
+    if(source_url == undefined){
+      return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfClLNBejGSkyxTT1EIn779i-szkhPMB9qIUrx5zYdlgQ5ziXG'
     } else {
-      return(
-        <TouchableOpacity
-          onPress={() => {
-            this.props.goDetailNews(item);
-            this.fetchData()
-          }}
-        >
-          <View style={styles.allBlocks}>
-            <Image style={styles.allBlockImage} source={{uri: this.source_urlFunc(item)}} />
-            <View style={styles.allBlockAbout}>
-              <Text style={styles.allBlockAboutText}>{entities.decodeHTML(item.title.rendered)}</Text>
-              <View style={styles.aboutFooter}>
-                <Text style={styles.aboutFooterTime}>{item.date}</Text>
-                <TouchableOpacity
-                  style={styles.aboutFooterFavBtn}
-                >
-                  <Image
-                    style={styles.aboutFooterImage}
-                    source={require('../../img/fav-news-icon.png')}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
-      );
+      return item._embedded["wp:featuredmedia"][0].source_url
     }
+  }
+  renderFirst(){
+    const { liked } = this.props;
+    const { data } = this.state;
+    const { detailNews } = this.props
+    let arr = [];
+    let ind;
+    let nom = data.map((item, index) => {
+      if(item.id == detailNews.data.id){
+        arr.push(item.id)
+      }
+    });
+    let num = arr[0];
+    const ren = data.map((coin, index) => {
+      if(num == coin.id){
+        return (
+          <FirstBlock key={index}
+            onPress={() => {
+              this.props.goDetailNews(coin, index);
+
+            }}
+            data={coin}
+            dataId={index}
+            source_url={{uri: this.source_urlFunc(coin)}}
+            textTitle={entities.decodeHTML(coin.title.rendered)}
+            date={coin.date}
+            author={coin._embedded.author[0].name}
+            content={
+              <HTMLView
+                value={coin.content.rendered}
+                stylesheet={styles}
+              />
+            }
+          />
+        );
+      }
+    })
+    return ren;
+  }
+  renderList(){
+    const { liked } = this.props;
+    const { data } = this.state;
+    const { detailNews } = this.props
+    let arr = [];
+    let ind;
+    let nom = data.map((item, index) => {
+      if(item.id == detailNews.data.id){
+        arr.push(item.id)
+      }
+    });
+    let num = arr[0];
+    const ren = data.map((coin, index) => {
+      if(num == coin.id){
+        return null
+      } else {
+        return (
+          <AllBlocks key={index}
+            onPress={() => {
+              this.props.goDetailNews(coin);
+              this.pushArr(index);
+            }}
+            data={coin}
+            dataId={index}
+            source_url={{uri: this.source_urlFunc(coin)}}
+            textTitle={entities.decodeHTML(coin.title.rendered)}
+            date={coin.date}
+          />
+        );
+      }
+    })
+    return ren;
   }
   render(){
     const { detailNews } = this.props;
@@ -69,9 +146,14 @@ class BitcoinDetailPage extends Component {
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.hamburgerBtn}
-              onPress={this.props.backNews}
+              onPress={() => {
+                this.props.backNews();
+                this.setState({
+                  data: []
+                })
+              }}
             >
-              <Image source={require('../../img/back-icon.png')}/>
+              <Image style={styles.backBtnIcon} source={require('../../img/back-icon.png')}/>
             </TouchableOpacity>
             <View style={styles.logoTextBlock}>
               <Text style={styles.logoText}>NEWSBTC</Text>
@@ -79,33 +161,11 @@ class BitcoinDetailPage extends Component {
             <TouchableOpacity
               style={styles.shareBtn}
             >
-              <Image source={require('../../img/share-icon.png')}/>
+              {/*  <Image source={require('../../img/share-icon.png')}/>*/}
             </TouchableOpacity>
           </View>
-          <View style={styles.aboutNews}>
-            <Text style={styles.aboutNewsTitle}>{entities.decodeHTML(detailNews.data.title.rendered)}</Text>
-            <Image style={styles.aboutNewsImage} source={{uri: this.source_urlFunc(detailNews.data)}} />
-            <View style={styles.aboutNewsFooter}>
-              <Text style={styles.authorText}>{detailNews.data._embedded.author[0].name} | {detailNews.data.date}</Text>
-              <TouchableOpacity
-                style={styles.aboutFooterFavBtn}
-              >
-                <Image
-                  style={styles.aboutFooterImage}
-                  source={this.props.liked.isLiked ? require('../../img/fav-news-filled-icon.png') : require('../../img/fav-news-icon.png')}
-                />
-              </TouchableOpacity>
-            </View>
-            <HTMLView
-              value={detailNews.data.content.rendered}
-              stylesheet={styles}
-            />
-          </View>
-          <FlatList
-            data={this.state.data}
-            keyExtractor={(x, i) => x.id}
-            renderItem={({item}) => this.renderBlock(item)}
-          />
+          {this.renderFirst()}
+          {this.renderList()}
         </ScrollView>
       </View>
     );
@@ -115,7 +175,7 @@ class BitcoinDetailPage extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1c1c1c'
+    backgroundColor: '#1d252c'
   },
   header: {
     width: '100%',
@@ -211,7 +271,7 @@ const styles = StyleSheet.create({
 
   p: {
     fontWeight: '300',
-    color: '#fff',
+    color: 'rgba(255, 255, 255, 0.69)',
     textAlign: 'justify',
     fontFamily: 'Avenir-Medium',
     fontSize: 14
@@ -235,6 +295,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontFamily: 'Avenir-Medium',
   },
+  backBtnIcon: {
+    width: 16,
+    height: 13
+  }
 });
 
 const mapStateToProps = (state) => {

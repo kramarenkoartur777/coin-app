@@ -1,23 +1,20 @@
-import { LIKED_POST, DISLIKES_POST } from '../actions/const';
+import { LIKED_POST, LIKED_POST_LENGTH, DISLIKES_POST } from '../actions/const';
 
-const INITIAL_STATE = {
-  isLiked: false,
-  data: []
-};
-
-const LikedPostReducer = (state = INITIAL_STATE, action) => {
+const LikedPostReducer = (state = [], action) => {
   switch(action.type){
     case LIKED_POST:
-      return{
-        ...state,
-        isLiked: true,
-        data: action.data
-      }
+      return [
+          ...state,
+          {
+            key: action.data,
+            completed: false
+          }
+        ]
     case DISLIKES_POST:
-      return {
-        ...state,
-        isLiked: false
-      }
+      return [
+      ...state.slice(0, action.index),
+      ...state.slice(action.index + 1)
+    ]
     default:
       return state;
   }

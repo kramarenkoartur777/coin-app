@@ -1,14 +1,9 @@
-import { GO_CHART_INFO, GO_MARKETS_INFO, FETCHING_MARKET_DATA, FETCHING_MARKET_DATA_SUCCESS, FETCHING_MARKET_DATA_FAIL } from '../actions/const';
+import { GO_CHART_INFO, GO_MARKETS_INFO, BACK_CHART } from '../actions/const';
 
 const INITIAL_STATE = {
   isChartInfo: true,
   isMarketsInfo: false,
 
-  isFetching: false,
-  data: [],
-  errorMessage: null,
-
-  fetchLimit: 10
 };
 
 const ChartNavReducer = (state = INITIAL_STATE, action) => {
@@ -25,22 +20,11 @@ const ChartNavReducer = (state = INITIAL_STATE, action) => {
         isMarketsInfo: true,
         isChartInfo: false
       }
-    case FETCHING_MARKET_DATA:
+    case BACK_CHART:
       return {
         ...state,
-        isFetching: true
-      }
-    case FETCHING_MARKET_DATA_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-        data: action.payload
-      }
-    case FETCHING_MARKET_DATA_FAIL:
-      return {
-        ...state,
-        data: action.payload,
-        errorMessage: action.err
+        isMarketsInfo: false,
+        isChartInfo: true
       }
     default:
       return state;

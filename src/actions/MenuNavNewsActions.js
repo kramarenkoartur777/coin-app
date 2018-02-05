@@ -1,5 +1,10 @@
-import { GO_BITCOIN_NAV, GO_ALTCOIN_NAV, GO_ICO_NAV, GO_ANALYSYS, GO_SPONSORED_NAV, GO_DERIVATIVES_NAV } from './const';
+import { GO_LATEST_NAV, GO_BITCOIN_NAV, GO_ALTCOIN_NAV, GO_ICO_NAV, GO_ANALYSYS, GO_SPONSORED_NAV, GO_DERIVATIVES_NAV } from './const';
 
+export const goLatest = () => {
+  return (dispatch) => {
+    dispatch({type: GO_LATEST_NAV})
+  }
+};
 export const goBitcoin = () => {
   return (dispatch) => {
     dispatch({type: GO_BITCOIN_NAV})

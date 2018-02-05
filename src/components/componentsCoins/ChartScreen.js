@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { connect } from 'react-redux';
 
-import { backBtnTop } from '../../actions/CoinsNavActions';
-import { goChartInfo } from '../../actions/ChartNavActions';
-import { goMarketsInfo } from '../../actions/ChartNavActions';
+import { backBtnTop, backBtnAll } from '../../actions/CoinsNavActions';
+import { goChartInfo, backChart, goMarketsInfo } from '../../actions/ChartNavActions';
 
 import ChartInfo from './ChartInfo';
 import MarketsInfo from './MarketsInfo';
@@ -21,15 +20,24 @@ class ChartScreen extends Component {
       return <MarketsInfo />;
     }
   }
+  backFunc(){
+    if(this.props.coinsNav.initBackBtn){
+      this.props.backBtnTop();
+      this.props.backChart();
+    } else {
+      this.props.backBtnAll();
+      this.props.backChart()
+    }
+  }
   render(){
     return(
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backBtn}
-            onPress={this.props.backBtnTop}
+            onPress={() => {this.backFunc()}}
           >
-            <Image source={require('../../img/back-icon.png')}/>
+            <Image style={styles.backBtnIcon} source={require('../../img/back-icon.png')}/>
           </TouchableOpacity>
           <View style={styles.coinName}>
             <Image style={styles.iconCoin} source={this.props.source} />
@@ -39,12 +47,12 @@ class ChartScreen extends Component {
             <TouchableOpacity
               style={styles.searchBtn}
             >
-              <Image source={require('../../img/search-icon.png')}/>
+              {/*<Image source={require('../../img/search-icon.png')}/>*/}
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.savedBtn}
             >
-              <Image source={require('../../img/saved-coins-icon.png')}/>
+              {/*<Image source={require('../../img/saved-coins-icon.png')}/>*/}
             </TouchableOpacity>
           </View>
         </View>
@@ -153,16 +161,19 @@ const styles = StyleSheet.create({
   },
   inactive: {
     color: "rgba(255, 255, 255, 0.4)"
+  },
+  backBtnIcon: {
+    width: 15,
+    height: 12
   }
 });
 
 const mapStateToProps = (state) => {
   return{
-    coins: state.coins,
     coinsNav: state.coinsNav,
     chartInfo: state.chartInfo
   }
 };
 
 
-export default connect(mapStateToProps, { backBtnTop, goMarketsInfo, goChartInfo })(ChartScreen);
+export default connect(mapStateToProps, { backBtnTop, goMarketsInfo, goChartInfo, backChart, backBtnAll })(ChartScreen);
