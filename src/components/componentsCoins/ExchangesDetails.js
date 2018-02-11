@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, ListView } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, ListView, BackHandler } from 'react-native';
 import { connect } from 'react-redux';
 import { DataTable, Cell, Row, CheckableCell, EditableCell, Expansion, Header, HeaderCell, TableButton } from 'react-native-data-table';
 import axios from 'axios';
@@ -14,7 +14,18 @@ class ExchangesDetails extends Component {
       pairSort: false,
       last_priceSort: false,
       volume: false,
-    }
+    };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+  componentWillUnmount() {
+      BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+  handleBackButtonClick() {
+    this.props.backBtnExchanges()
+    return true
   }
   componentDidMount(){
     this.fetchMarket();
@@ -56,7 +67,6 @@ class ExchangesDetails extends Component {
   }
   renderRow(rowData) {
     const { coinsNav } = this.props;
-    console.log(rowData)
     return(
       <Row style={styles.marketRow}>
         <Cell style={styles.cellStyle} textStyle={styles.textMarketRow}>{rowData.pair}</Cell>

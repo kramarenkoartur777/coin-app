@@ -7,10 +7,9 @@ import { connect } from 'react-redux';
 
 import { goDetailNews, backNews, likedDetailNews, fetchData2 } from '../../actions/DetailNewsActions';
 import { likedPost, disLikesPost } from '../../actions/LikedPostActions';
-import BitcoinDetailPage from './BitcoinDetailPage';
-import MenuNews from '../MenuNews';
 import FirstBlock from './FirstBlock';
 import AllBlocks from './AllBlocks';
+import BitcoinDetailPage from './BitcoinDetailPage';
 
 class ICONews extends Component {
   constructor(){
@@ -84,7 +83,6 @@ class ICONews extends Component {
     } else {
       return(
         <View style={styles.container} id={this.props.id}>
-          <MenuNews />
           <ScrollView>
           {this.state.isFetching ? <ActivityIndicator style={{paddingTop: 200}} size='small' /> : this.renderList()}
           </ScrollView>

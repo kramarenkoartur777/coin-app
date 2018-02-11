@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, BackHandler } from 'react-native';
 import { connect } from 'react-redux';
 
 import { backBtnTop, backBtnAll } from '../../actions/CoinsNavActions';
@@ -12,6 +12,25 @@ class ChartScreen extends Component {
   constructor(){
     super();
     this.navigationChartScreen = this.navigationChartScreen.bind(this);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+  componentWillUnmount() {
+      BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+  handleBackButtonClick() {
+    if(this.props.coinsNav.initBackBtn){
+      this.props.backBtnTop();
+      this.props.backChart();
+      return true
+    } else if(!this.props.coinsNav.initBackBtn){
+      this.props.backBtnAll();
+      this.props.backChart()
+      return true
+    }
+    return true;
   }
   navigationChartScreen(){
     if(this.props.chartInfo.isChartInfo){

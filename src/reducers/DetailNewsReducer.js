@@ -31,7 +31,6 @@ const DetailNewsReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         isDetail: false,
-        data: [],
       }
     default:
       return state;

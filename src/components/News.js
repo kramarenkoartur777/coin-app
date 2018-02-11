@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView, BackHandler } from 'react-native';
 import { connect } from 'react-redux';
 
 import BitcoinNews from './componentsNews/BitcoinNews';
@@ -9,6 +9,12 @@ import AnalysisNews from './componentsNews/AnalysisNews';
 import SponsoredNews from './componentsNews/SponsoredNews';
 import DerivativesNews from './componentsNews/DerivativesNews';
 import LatestNews from './componentsNews/LatestNews';
+import BlockchainNews from './componentsNews/BlockchainNews';
+import CryptotechNews from './componentsNews/CryptotechNews';
+import IndustryNews from './componentsNews/IndustryNews';
+import BitcoinDetailPage from './componentsNews/BitcoinDetailPage';
+
+import MenuNews from './MenuNews';
 
 class News extends Component {
   renderContent(){
@@ -24,13 +30,22 @@ class News extends Component {
       return <SponsoredNews id='5'/>;
     } else if(this.props.menuNews.isDerivatives){
       return <DerivativesNews id='6'/>;
+    } else if(this.props.menuNews.isBlockchain){
+      return <BlockchainNews id='7'/>;
+    } else if(this.props.menuNews.isCryptotech){
+      return <CryptotechNews id='8'/>;
+    } else if(this.props.menuNews.isIndustry){
+      return <IndustryNews id='9'/>;
     } else {
-      return <LatestNews id='7' />
+      return <LatestNews id='10' />
     }
   }
   render(){
     return(
       <View style={styles.container}>
+        {this.props.detailNews.isDetail ? <BitcoinDetailPage /> : null}
+        <MenuNews />
+
         {this.renderContent()}
       </View>
     );
@@ -40,14 +55,16 @@ class News extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1c1c1c'
+    backgroundColor: '#1c1c1c',
+    position: 'relative'
   }
 });
 
 const mapStateToProps = (state) => {
   return {
     menuNews: state.menuNews,
-    menuNav: state.menuNav
+    menuNav: state.menuNav,
+    detailNews: state.detailNews
   }
 };
 

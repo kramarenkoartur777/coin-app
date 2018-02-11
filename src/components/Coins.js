@@ -141,12 +141,11 @@ const styles = StyleSheet.create({
   },
   navCoinsMenu: {
     flexDirection: 'row',
-    height: 38,
+    paddingVertical: 4,
     backgroundColor: 'rgba(3, 90, 121, 0.58)',
   },
   btnNavCoinsMenu: {
     flex: 1,
-    paddingTop: 4
   },
   navFontText: {
     fontFamily: 'Avenir-Medium',

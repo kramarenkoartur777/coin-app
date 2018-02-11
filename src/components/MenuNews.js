@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView } from 'rea
 import { connect } from 'react-redux';
 
 import { goHamburger, closeHamburger } from '../actions/MenuNavActions';
-import { goBitcoin, goAltcoin, goIco, goAnalysys, goSponsored, goDerivatives, goLatest } from '../actions/MenuNavNewsActions';
+import { goBitcoin, goAltcoin, goIco, goAnalysys, goSponsored, goDerivatives, goLatest, goBlockchain, goCryptotech, goIndustry } from '../actions/MenuNavNewsActions';
 
 class MenuNews extends Component {
   render(){
@@ -14,7 +14,7 @@ class MenuNews extends Component {
             onPress={this.props.goHamburger}
             style={styles.hamburgerBtn}
           >
-            <Image source={require('../img/menubar-icon.png')}/>
+            <Image style={{width: 17, height: 10}} source={require('../img/menu-icon-3x.png')}/>
           </TouchableOpacity>
           <View style={styles.logoTextBlock}>
             <Text style={styles.logoText}>NEWSBTC</Text>
@@ -65,6 +65,24 @@ class MenuNews extends Component {
             onPress={this.props.goDerivatives}
           >
             <Text style={[(this.props.menuNews.isDerivatives ? styles.activeText : styles.inactiveText), styles.navFontText]}>Derivatives</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnNavCoinsMenu}
+            onPress={this.props.goBlockchain}
+          >
+            <Text style={[(this.props.menuNews.isBlockchain ? styles.activeText : styles.inactiveText), styles.navFontText]}>Blockchain Projects</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnNavCoinsMenu}
+            onPress={this.props.goCryptotech}
+          >
+            <Text style={[(this.props.menuNews.isCryptotech ? styles.activeText : styles.inactiveText), styles.navFontText]}>Crypto Tech</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnNavCoinsMenu}
+            onPress={this.props.goIndustry}
+          >
+            <Text style={[(this.props.menuNews.isIndustry ? styles.activeText : styles.inactiveText), styles.navFontText]}>Industry News</Text>
           </TouchableOpacity>
           </ScrollView>
         </View>
@@ -131,4 +149,4 @@ const mapStateToProps = (state) => {
   }
 };
 
-export default connect(mapStateToProps, { goLatest, goBitcoin, goAltcoin, goIco, goAnalysys, goSponsored, goDerivatives, goHamburger, closeHamburger })(MenuNews);
+export default connect(mapStateToProps, { goLatest, goBitcoin, goAltcoin, goIco, goAnalysys, goSponsored, goDerivatives, goHamburger, closeHamburger, goBlockchain, goCryptotech, goIndustry })(MenuNews);

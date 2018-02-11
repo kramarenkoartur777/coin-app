@@ -106,8 +106,8 @@ class AllCoinsScreen extends Component {
         <Cell textStyle={[styles.textMarketRow, styles.chg1Col, (rowData.percent_change_1h > 0 ? styles.percentPlus : styles.percentMinus)]}>{percent1h}</Cell>
         <Cell textStyle={[styles.textMarketRow, styles.chg24Col, (rowData.percent_change_24h > 0 ? styles.percentPlus : styles.percentMinus)]}>{percent24h}</Cell>
         <Cell textStyle={[styles.textMarketRow, styles.chg7Col, (rowData.percent_change_7d > 0 ? styles.percentPlus : styles.percentMinus)]}>{percent7d}</Cell>
-        <Cell textStyle={[styles.textMarketRow, styles.marketCol]}>{cap}</Cell>
-        <Cell textStyle={[styles.textMarketRow, styles.supplyCol]}>{t_supp}</Cell>
+        <Cell textStyle={[styles.textMarketRow, styles.marketCol]}>{cap == 0 ? 'N/A' : cap}</Cell>
+        <Cell textStyle={[styles.textMarketRow, styles.supplyCol]}>{t_supp == 0 ? 'N/A' : t_supp}</Cell>
       </Row>
     );
   }

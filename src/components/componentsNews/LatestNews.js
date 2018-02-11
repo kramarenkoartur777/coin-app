@@ -5,10 +5,9 @@ var entities = require('entities');
 
 import { connect } from 'react-redux';
 import { goDetailNews, backNews, likedDetailNews, fetchData2 } from '../../actions/DetailNewsActions';
-import BitcoinDetailPage from './BitcoinDetailPage';
-import MenuNews from '../MenuNews';
 import FirstBlock from './FirstBlock';
 import AllBlocks from './AllBlocks';
+import BitcoinDetailPage from './BitcoinDetailPage';
 
 class LatestNews extends Component {
   constructor(){
@@ -41,6 +40,7 @@ class LatestNews extends Component {
   renderList(){
     const { liked } = this.props;
     const { data } = this.state;
+    console.log(liked)
     let arr = [];
     let nom = data.map((item) => {
       arr.push(item.id);
@@ -83,7 +83,6 @@ class LatestNews extends Component {
     } else {
       return(
         <View style={styles.container} id={this.props.id}>
-          <MenuNews />
           <ScrollView>
           {this.state.isFetching ? <ActivityIndicator style={{paddingTop: 200}} size='small' /> : this.renderList()}
           </ScrollView>

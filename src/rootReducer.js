@@ -6,6 +6,7 @@ import MenuNavReducer from './reducers/MenuNavReducer';
 import MenuNavNewsReducer from './reducers/MenuNavNewsReducer';
 import DetailNewsReducer from './reducers/DetailNewsReducer';
 import LikedPostReducer from './reducers/LikedPostReducer';
+import ToolsReducer from './reducers/ToolsReducer';
 
 const rootReducer = combineReducers({
   coinsNav: CoinsNavReducer,
@@ -13,7 +14,8 @@ const rootReducer = combineReducers({
   menuNav: MenuNavReducer,
   menuNews: MenuNavNewsReducer,
   detailNews: DetailNewsReducer,
-  liked: LikedPostReducer
+  liked: LikedPostReducer,
+  tools: ToolsReducer
 });
 
 export default rootReducer;

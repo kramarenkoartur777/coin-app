@@ -43,6 +43,33 @@ class ChartInfo extends Component {
     const p = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
     return p;
   }
+  renderChartBlock(arr, isDaily, isAllChart, conf, options){
+    if(arr.length == 0){
+      return null;
+    } else {
+      return(
+        <View style={{flex: 1}}>
+          <View style={styles.chartNav}>
+            <TouchableOpacity
+              onPress={() => this.props.goDaily()}
+              style={[styles.chartNavBtn, (isDaily ? styles.active : styles.inactive )]}
+            >
+              <Text style={styles.chartNavText}>Daily</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => this.props.goAllChart()}
+              style={[styles.chartNavBtn, (isAllChart ? styles.active : styles.inactive )]}
+            >
+              <Text style={styles.chartNavText}>All</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.chartBlock}>
+            <ChartView style={{width: '100%', height:200}} config={conf} options={options}></ChartView>
+          </View>
+        </View>
+      );
+    }
+  }
   render(){
     const { price, percent_change_24h, market_cap, volume_usd_24, circulating_supply, total_supply, symbol, isAllChart, isLast1h, apiDaily, isDaily } = this.props.coinsNav;
 
@@ -133,39 +160,22 @@ class ChartInfo extends Component {
       <ScrollView>
       <View style={styles.container}>
         <View style={styles.priceBlock}>
-          <Text style={styles.priceText}>$ {pr == '' ? 0 : pr}<Text style={[(percent_change_24h < 0 ? styles.percentMinus : styles.percentPlus), styles.pricePercentText]}>   ({percent_change_24h == '' ? 0 : percent_change_24h}%)</Text></Text>
+          <Text style={styles.priceText}>$ {pr == '' || pr == 0 ? 'N/A' : pr}<Text style={[(percent_change_24h < 0 ? styles.percentMinus : styles.percentPlus), styles.pricePercentText]}>   ({percent_change_24h == '' ? 0 : percent_change_24h}%)</Text></Text>
         </View>
         <View style={[styles.marketCapBlock, styles.chartBlocks]}>
           <Text style={[styles.marketCapTitle, styles.chartTitle]}>Market Cap</Text>
-          <Text style={[styles.marketCapText, styles.chartText]}>$ {cap == '' ? 0 : cap}</Text>
+          <Text style={[styles.marketCapText, styles.chartText]}>$ {cap == '' || cap == 0 ? 'N/A' : cap}</Text>
         </View>
         <View style={[styles.volumeBlock, styles.chartBlocks]}>
           <Text style={[styles.volumeTitle, styles.chartTitle]}>Volume (24h)</Text>
-          <Text style={[styles.volumeText, styles.chartText]}>$ {vol == '' ? 0 : vol }</Text>
+          <Text style={[styles.volumeText, styles.chartText]}>$ {vol == '' || vol == 0 ? 'N/A' : vol }</Text>
         </View>
         <View style={[styles.coinsSupplyBlock, styles.chartBlocks]}>
           <Text style={[styles.coinsSupplyTitle, styles.chartTitle]}>Coins Supply</Text>
-          <Text style={[styles.coinsSupplyText, styles.chartText]}>{c_supp == '' ? 0 : c_supp}  / {t_supp == '' ? 0 : t_supp} <Text style={styles.symbolText}>{symbol}</Text></Text>
+          <Text style={[styles.coinsSupplyText, styles.chartText]}>{c_supp == '' || c_supp == 0 ? 'N/A' : c_supp}  / {t_supp == '' || t_supp == 0 ? 'N/A' : t_supp} <Text style={styles.symbolText}>{symbol}</Text></Text>
         </View>
-          <View style={{flex: 1}}>
-            <View style={styles.chartNav}>
-              <TouchableOpacity
-                onPress={() => this.props.goDaily()}
-                style={[styles.chartNavBtn, (isDaily ? styles.active : styles.inactive )]}
-              >
-                <Text style={styles.chartNavText}>Daily</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => this.props.goAllChart()}
-                style={[styles.chartNavBtn, (isAllChart ? styles.active : styles.inactive )]}
-              >
-                <Text style={styles.chartNavText}>All</Text>
-              </TouchableOpacity>
-            </View>
-          <View style={styles.chartBlock}>
-            <ChartView style={{width: '100%', height:200}} config={conf} options={options}></ChartView>
-          </View>
-        </View>
+        {this.renderChartBlock(arr, isDaily, isAllChart, conf, options)}
+
       </View>
       </ScrollView>
     );

@@ -32,21 +32,18 @@ class ExchangesScreen extends Component {
           text='Name'
           textStyle={[styles.textFont, styles.textName]}
           style={[styles.header, styles.headerName]}
-          width={1.1}
           />
         <HeaderCell
           onPress={() => {this.pairsSort(); this.setState((prevState) => {return {sort: !prevState.sort }})}}
           text='Trading Pairs'
           textStyle={[styles.textFont, styles.textPairs]}
           style={styles.headerTra}
-          width={1}
           />
         <HeaderCell
           onPress={() => {this.chg24Sort(); this.setState((prevState) => {return {sort: !prevState.sort }})}}
           text='Vol. USD(24H)'
           textStyle={[styles.textFont, styles.textVol]}
           style={styles.headerVol}
-          width={1}
           />
       </Header>
     );
@@ -59,9 +56,9 @@ class ExchangesScreen extends Component {
           onPress={() => this.props.goExchangesDetails(rowData.exchangename, rowData.tradingpairs, rowData.volumeinUSD24H, rowData.exchangeid)}
         >
           <Text style={styles.textCoinName}>{rowData.exchangename}</Text>
+          <Cell textStyle={[styles.textMarketRow]}>{rowData.tradingpairs}</Cell>
+          <Cell textStyle={[styles.textMarketRow]}>{rowData.volumeinUSD24H}</Cell>
         </TouchableOpacity>
-        <Cell textStyle={[styles.textMarketRow]}>{rowData.tradingpairs}</Cell>
-        <Cell textStyle={[styles.textMarketRow]}>{rowData.volumeinUSD24H}</Cell>
       </Row>
     );
   }
@@ -129,12 +126,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   header: {
-    flex: 1,
     height: 25,
     backgroundColor: 'rgba(40, 68, 78, 0.39)',
   },
   headerName: {
-    flex: 1,
+    width: 128,
+    paddingRight: 12
   },
   textFont: {
     fontFamily: 'Avenir-Medium',
@@ -154,18 +151,20 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   btnCoinName: {
-    width: 128,
+    width: '100%',
     flexDirection: 'row',
-    height: 39,
-    backgroundColor: 'rgba(40, 68, 78, 0.39)',
   },
   textCoinName: {
+    height: 39,
+    width: 128,
     color: '#fff',
     fontWeight: '400',
     fontSize: 14,
+    textAlignVertical: 'center',
     fontFamily: 'Avenir-Medium',
     alignSelf: 'center',
-    paddingLeft: 30
+    paddingLeft: 30,
+    backgroundColor: 'rgba(40, 68, 78, 0.39)',
   },
   textName: {
     paddingLeft: 30

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, ListView, Picker, TextInput } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, ListView, Picker, TextInput, BackHandler } from 'react-native';
 import { connect } from 'react-redux';
 import { DataTable, Cell, Row, CheckableCell, EditableCell, Expansion, Header, HeaderCell, TableButton } from 'react-native-data-table';
 import axios from 'axios';
@@ -23,6 +23,19 @@ class PairsScreen extends Component {
       isFetchMarket: true,
     };
     this.data = [];
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+  componentWillUnmount() {
+      BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+  handleBackButtonClick() {
+    if(this.state.picker){
+      this.setState({picker: false})
+      return true
+    }
   }
   componentDidMount(){
     this.fetchMarket();
@@ -40,7 +53,6 @@ class PairsScreen extends Component {
           price: res.data.records[0].price,
           percent_change_24h: res.data.records[0].percent_change_24h,
           symbol: res.data.records[0].symbol,
-          isFetching: false
         }, function(){
           this.data = res.data.records
         })
@@ -51,7 +63,7 @@ class PairsScreen extends Component {
     const url = 'https://tools.newsbtc.com/app/app-currencies-detail.php?symbol=';
     axios.get(`${url}${symbol}&offset=0&limit=2000`)
       .then((res) => {
-        this.setState({ dataMarket: res.data.records, isFetchMarket: false})
+        this.setState({ dataMarket: res.data.records, isFetchMarket: false, isFetching: false})
       })
   }
   renderHeader(){

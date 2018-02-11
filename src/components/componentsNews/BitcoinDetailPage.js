@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { StyleSheet, View, Text, FlatList, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Image, ScrollView, TouchableOpacity, Share, BackHandler } from 'react-native';
 import { connect } from 'react-redux';
 import { goDetailNews, backNews } from '../../actions/DetailNewsActions';
 var entities = require('entities');
@@ -18,6 +18,22 @@ class BitcoinDetailPage extends Component {
       monthName: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     };
     this.source_urlFunc = this.source_urlFunc.bind(this);
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount() {
+      BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick() {
+    if(this.props.detailNews.isDetail){
+      this.props.backNews();
+      return true
+    }
+    return false;
   }
   componentDidMount(){
     this.fetchData();
@@ -126,6 +142,7 @@ class BitcoinDetailPage extends Component {
             onPress={() => {
               this.props.goDetailNews(coin);
               this.pushArr(index);
+              this.listRef.scrollTo({x: 0, y: 0, animated: false})
             }}
             data={coin}
             dataId={index}
@@ -138,11 +155,30 @@ class BitcoinDetailPage extends Component {
     })
     return ren;
   }
+
+  _shareTextMessage(coin) {
+    Share.share({
+      message: coin[0].guid.rendered,
+      title: coin[0].title.rendered
+    }, {
+      dialogTitle: coin[0].title.rendered
+    })
+    .then(this._showResult)
+    .catch(err => console.log(err))
+  }
+  _showResult (result) {
+    console.log(result)
+  }
   render(){
     const { detailNews } = this.props;
     return(
-      <View style={styles.container}>
-        <ScrollView directionalLockEnabled={true}>
+      <View style={{position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, zIndex: 1}}>
+      <View style={styles.detailContainer}>
+        <ScrollView directionalLockEnabled={true}
+          bounces={true}
+          overScrollMode='always'
+          ref={(ref) => { this.listRef = ref }}
+        >
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.hamburgerBtn}
@@ -159,21 +195,23 @@ class BitcoinDetailPage extends Component {
               <Text style={styles.logoText}>NEWSBTC</Text>
             </View>
             <TouchableOpacity
+              onPress={() => this._shareTextMessage(this.state.data)}
               style={styles.shareBtn}
             >
-              {/*  <Image source={require('../../img/share-icon.png')}/>*/}
+              <Image style={{width: 13, height: 15}} source={require('../../img/share-icon-3x.png')}/>
             </TouchableOpacity>
           </View>
           {this.renderFirst()}
           {this.renderList()}
         </ScrollView>
       </View>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  detailContainer: {
     flex: 1,
     backgroundColor: '#1d252c'
   },
@@ -199,11 +237,12 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontSize: 18,
     paddingTop: 10,
-    paddingLeft: 10
+    paddingLeft: 18
   },
   shareBtn: {
     alignSelf: 'center',
-    marginRight: 15
+    marginRight: 15,
+    padding: 5,
   },
   aboutNews: {
     paddingHorizontal: 15,

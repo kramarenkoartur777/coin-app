@@ -1,4 +1,4 @@
-import { GO_COINS_NAV, GO_NEWS_NAV, GO_TOOLS_NAV, GO_PORTFOLIO_NAV, GO_HAMBURGER, CLOSE_HAMBURGER, GO_MY_FAVORITES, GO_MY_FAVORITES_NEWS, CLOSE_MY_FAVORITES, CLOSE_MY_FAVORITES_NEWS } from './const';
+import { GO_COINS_NAV, GO_NEWS_NAV, GO_TOOLS_NAV, GO_PORTFOLIO_NAV, GO_HAMBURGER, CLOSE_HAMBURGER, GO_MY_FAVORITES, GO_MY_FAVORITES_NEWS, CLOSE_MY_FAVORITES, CLOSE_MY_FAVORITES_NEWS} from './const';
 
 export const goCoins = () => {
   return (dispatch) => {
@@ -36,18 +36,9 @@ export const goMyFavorites = () => {
     dispatch({type: GO_MY_FAVORITES})
   }
 };
-export const goMyFavoritesNews = () => {
-  return (dispatch) => {
-    dispatch({type: GO_MY_FAVORITES_NEWS})
-  }
-};
+
 export const closeMyFavorites = () => {
   return (dispatch) => {
     dispatch({type: CLOSE_MY_FAVORITES})
-  }
-};
-export const closeMyFavoritesNews = () => {
-  return (dispatch) => {
-    dispatch({type: CLOSE_MY_FAVORITES_NEWS})
   }
 };

@@ -25,6 +25,7 @@ class FirstBlock extends Component {
   }
   renderLike(p, index){
     const { liked } = this.props;
+
     let l;
     liked.forEach((a, i) => {
       if(a.key.id == p.id){
@@ -67,6 +68,7 @@ class FirstBlock extends Component {
   }
   renderDetailsFirst(){
     const { detailNews } = this.props;
+    console.log(detailNews)
     return(
       <View>
         <Text style={styles.firstBlockTitle}>{this.props.textTitle}</Text>
@@ -78,6 +80,7 @@ class FirstBlock extends Component {
             onPress={() => {
               if(this.props.menuNav.isFavorites){
                 this.props.disLikesPost(this.props.dataId);
+                this.setState({like: false})
               } else {
                 this.renderLike(this.props.data, this.props.dataId)
               }
